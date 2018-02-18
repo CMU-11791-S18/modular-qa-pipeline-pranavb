@@ -3,10 +3,10 @@ import json
 from sklearn.externals import joblib
 
 from Retrieval import Retrieval
-from featurizer import Featurizer
-from featurizer import CountFeaturizer
-from classifier import Classifier
-from classifier import MultinomialNaiveBayes
+from Featurizer import Featurizer
+from CountFeaturizer import CountFeaturizer
+from Classifier import Classifier
+from MultinomialNaiveBayes import MultinomialNaiveBayes
 from Evaluator import Evaluator
 
 
@@ -64,10 +64,10 @@ class Pipeline(object):
 
 
 if __name__ == '__main__':
-    trainFilePath = sys.argv[1] # C:\wl-shared\deiis\quasar-s_dev_formatted.json
-    valFilePath = sys.argv[2]
+    trainFilePath = sys.argv[1] # C:\wl-shared\deiis\quasar-s_train_formatted.json
+    valFilePath = sys.argv[2] # C:\wl-shared\deiis\quasar-s_dev_formatted.json
     retrievalInstance = Retrieval()
-    featurizerInstance = CountFeaturizer.CountFeaturizer()
-    classifierInstance = MultinomialNaiveBayes.MultinomialNaiveBayes()
+    featurizerInstance = CountFeaturizer()
+    classifierInstance = MultinomialNaiveBayes()
     trainInstance = Pipeline(trainFilePath, valFilePath,
                              retrievalInstance, featurizerInstance, classifierInstance)
