@@ -3,12 +3,16 @@ import json
 from sklearn.externals import joblib
 
 from Retrieval import Retrieval
-from Featurizer import Featurizer
-# from CountFeaturizer import CountFeaturizer
-from Tf_Idf_Featurizer import Tf_Idf_Featurizer
-from Classifier import Classifier
-from MultinomialNaiveBayes import MultinomialNaiveBayes
 from Evaluator import Evaluator
+
+from Featurizer import Featurizer
+from CountFeaturizer import CountFeaturizer
+# from Tf_Idf_Featurizer import Tf_Idf_Featurizer
+
+from Classifier import Classifier
+# from MultinomialNaiveBayes import MultinomialNaiveBayes
+from SupportVectorMachine import SupportVectorMachine
+# from MultiLayerPerceptron import MultiLayerPerceptron
 
 
 class Pipeline(object):
@@ -51,30 +55,35 @@ class Pipeline(object):
         X_val, Y_val_true = self.makeXY(self.valData['questions'])
 
         # Featurization
-        print('Running the featurizer')
+        print('Featurizing')
         X_features_train, X_features_val = self.featurizerInstance.getFeatureRepresentation(
             X_train, X_val)
-        print('Running the classifier')
+        print('Classifying')
         self.clf = self.classifierInstance.buildClassifier(
             X_features_train, Y_train)
 
         # Prediction
+        print('Running the classifier\'s prediction algo')
         Y_val_pred = self.clf.predict(X_features_val)
 
+        # Evaluation
+        print('Evaluating')
         self.evaluatorInstance = Evaluator()
         a = self.evaluatorInstance.getAccuracy(Y_val_true, Y_val_pred)
         p, r, f = self.evaluatorInstance.getPRF(Y_val_true, Y_val_pred)
-        print("Accuracy: "+str(a))
-        print("Precision: " + str(p))
-        print("Recall: " + str(r))
-        print("F-measure: " + str(f))
+
+        print('\n------------- RESULTS -------------')
+        print("Accuracy:\t"  + str(a))
+        print("Precision:\t" + str(p))
+        print("Recall:\t\t"  + str(r))
+        print("F-measure:\t" + str(f))
 
 
 if __name__ == '__main__':
     trainFilePath = sys.argv[1] # C:\wl-shared\deiis\quasar-s_train_formatted.json
     valFilePath = sys.argv[2] # C:\wl-shared\deiis\quasar-s_dev_formatted.json
     retrievalInstance = Retrieval()
-    featurizerInstance = Tf_Idf_Featurizer()
-    classifierInstance = MultinomialNaiveBayes()
+    featurizerInstance = CountFeaturizer()
+    classifierInstance = SupportVectorMachine()
     trainInstance = Pipeline(trainFilePath, valFilePath,
                              retrievalInstance, featurizerInstance, classifierInstance)
