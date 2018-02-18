@@ -4,7 +4,8 @@ from sklearn.externals import joblib
 
 from Retrieval import Retrieval
 from Featurizer import Featurizer
-from CountFeaturizer import CountFeaturizer
+# from CountFeaturizer import CountFeaturizer
+from Tf_Idf_Featurizer import Tf_Idf_Featurizer
 from Classifier import Classifier
 from MultinomialNaiveBayes import MultinomialNaiveBayes
 from Evaluator import Evaluator
@@ -16,13 +17,17 @@ class Pipeline(object):
         self.featurizerInstance = featurizerInstance
         self.classifierInstance = classifierInstance
 
+        print('Parsing the training file')
         trainfile = open(trainFilePath, 'r')
         self.trainData = json.load(trainfile)
         trainfile.close()
+        print('Completed parsing')
 
+        print('Parsing the validation file')
         valfile = open(valFilePath, 'r')
         self.valData = json.load(valfile)
         valfile.close()
+        print('Completed parsing')
 
         self.question_answering()
 
@@ -46,8 +51,10 @@ class Pipeline(object):
         X_val, Y_val_true = self.makeXY(self.valData['questions'])
 
         # Featurization
+        print('Running the featurizer')
         X_features_train, X_features_val = self.featurizerInstance.getFeatureRepresentation(
             X_train, X_val)
+        print('Running the classifier')
         self.clf = self.classifierInstance.buildClassifier(
             X_features_train, Y_train)
 
@@ -67,7 +74,7 @@ if __name__ == '__main__':
     trainFilePath = sys.argv[1] # C:\wl-shared\deiis\quasar-s_train_formatted.json
     valFilePath = sys.argv[2] # C:\wl-shared\deiis\quasar-s_dev_formatted.json
     retrievalInstance = Retrieval()
-    featurizerInstance = CountFeaturizer()
+    featurizerInstance = Tf_Idf_Featurizer()
     classifierInstance = MultinomialNaiveBayes()
     trainInstance = Pipeline(trainFilePath, valFilePath,
                              retrievalInstance, featurizerInstance, classifierInstance)
