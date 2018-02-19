@@ -12,3 +12,7 @@ class Featurizer:
 	def getFeatureRepresentation(self, X_train, X_val):
 		pass
 
+	@abstractmethod
+	def getName(self):
+		pass
+

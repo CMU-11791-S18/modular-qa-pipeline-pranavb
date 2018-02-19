@@ -7,31 +7,21 @@ from Evaluator import Evaluator
 
 from Featurizer import Featurizer
 from CountFeaturizer import CountFeaturizer
-# from Tf_Idf_Featurizer import Tf_Idf_Featurizer
+from Tf_Idf_Featurizer import Tf_Idf_Featurizer
 
 from Classifier import Classifier
-# from MultinomialNaiveBayes import MultinomialNaiveBayes
+from MultinomialNaiveBayes import MultinomialNaiveBayes
 from SupportVectorMachine import SupportVectorMachine
-# from MultiLayerPerceptron import MultiLayerPerceptron
+from MultiLayerPerceptron import MultiLayerPerceptron
 
 
 class Pipeline(object):
-    def __init__(self, trainFilePath, valFilePath, retrievalInstance, featurizerInstance, classifierInstance):
+    def __init__(self, trainData, valData, retrievalInstance, featurizerInstance, classifierInstance):
         self.retrievalInstance = retrievalInstance
         self.featurizerInstance = featurizerInstance
         self.classifierInstance = classifierInstance
-
-        print('Parsing the training file')
-        trainfile = open(trainFilePath, 'r')
-        self.trainData = json.load(trainfile)
-        trainfile.close()
-        print('Completed parsing')
-
-        print('Parsing the validation file')
-        valfile = open(valFilePath, 'r')
-        self.valData = json.load(valfile)
-        valfile.close()
-        print('Completed parsing')
+        self.trainData = trainData
+        self.valData = valData
 
         self.question_answering()
 
@@ -40,7 +30,7 @@ class Pipeline(object):
         Y = []
         for question in dataQuestions:
 
-            long_snippets = self.retrievalInstance.getLongSnippets(question)
+            # long_snippets = self.retrievalInstance.getLongSnippets(question)
             short_snippets = self.retrievalInstance.getShortSnippets(question)
 
             X.append(short_snippets)
@@ -72,7 +62,7 @@ class Pipeline(object):
         a = self.evaluatorInstance.getAccuracy(Y_val_true, Y_val_pred)
         p, r, f = self.evaluatorInstance.getPRF(Y_val_true, Y_val_pred)
 
-        print('\n------------- RESULTS -------------')
+        print('\n            RESULTS')
         print("Accuracy:\t"  + str(a))
         print("Precision:\t" + str(p))
         print("Recall:\t\t"  + str(r))
@@ -81,9 +71,30 @@ class Pipeline(object):
 
 if __name__ == '__main__':
     trainFilePath = sys.argv[1] # C:\wl-shared\deiis\quasar-s_train_formatted.json
-    valFilePath = sys.argv[2] # C:\wl-shared\deiis\quasar-s_dev_formatted.json
+    valFilePath = sys.argv[2]   # C:\wl-shared\deiis\quasar-s_dev_formatted.json
     retrievalInstance = Retrieval()
-    featurizerInstance = CountFeaturizer()
-    classifierInstance = SupportVectorMachine()
-    trainInstance = Pipeline(trainFilePath, valFilePath,
-                             retrievalInstance, featurizerInstance, classifierInstance)
+
+    print('Parsing the training file')
+    trainFile = open(trainFilePath, 'r')
+    trainData = json.load(trainFile)
+    trainFile.close()
+    print('Completed parsing')
+
+    print('Parsing the validation file')
+    valFile = open(valFilePath, 'r')
+    valData = json.load(valFile)
+    valFile.close()
+    print('Completed parsing')
+
+    featurizers = [CountFeaturizer(), Tf_Idf_Featurizer()]
+    classifiers = [MultinomialNaiveBayes(), SupportVectorMachine(), MultiLayerPerceptron()]
+    i = 0
+
+    # Run for all combinations
+    for featurizer in featurizers:
+        for classifier in classifiers:
+            i = i + 1
+            print('\n------------ (Test #{}) ------------'.format(i))
+            print('Featurizer:\t' +featurizer.getName())
+            print('Classifier:\t' +classifier.getName())
+            trainInstance = Pipeline(trainData, valData, retrievalInstance, featurizer, classifier)

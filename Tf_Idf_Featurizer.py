@@ -10,3 +10,6 @@ class Tf_Idf_Featurizer(Featurizer):
 		X_train_weights = vectorizer.fit_transform(X_train)
 		X_val_weights = vectorizer.transform(X_val)
 		return X_train_weights, X_val_weights
+
+	def getName(self):
+		return "Tf-Idf Featurizer"

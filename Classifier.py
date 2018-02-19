@@ -13,3 +13,7 @@ class Classifier:
     @abstractmethod
     def buildClassifier(self, X_features, Y_train):
         pass
+
+    @abstractmethod
+    def getName(self):
+        pass
