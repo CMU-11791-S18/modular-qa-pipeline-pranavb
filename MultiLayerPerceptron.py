@@ -1,6 +1,7 @@
 from Classifier import Classifier
 from sklearn.neural_network import MLPClassifier
 
+# Note: implemented without scaling
 class MultiLayerPerceptron(Classifier):
 
     def buildClassifier(self, X_features, Y_train):

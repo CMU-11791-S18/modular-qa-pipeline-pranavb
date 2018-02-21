@@ -45,19 +45,19 @@ class Pipeline(object):
         X_val, Y_val_true = self.makeXY(self.valData['questions'])
 
         # Featurization
-        print('Featurizing')
+        print('Featurizing...')
         X_features_train, X_features_val = self.featurizerInstance.getFeatureRepresentation(
             X_train, X_val)
-        print('Classifying')
+        print('Classifying...')
         self.clf = self.classifierInstance.buildClassifier(
             X_features_train, Y_train)
 
         # Prediction
-        print('Running the classifier\'s prediction algo')
+        print('Running the classifier\'s prediction algo...')
         Y_val_pred = self.clf.predict(X_features_val)
 
         # Evaluation
-        print('Evaluating')
+        print('Evaluating...')
         self.evaluatorInstance = Evaluator()
         a = self.evaluatorInstance.getAccuracy(Y_val_true, Y_val_pred)
         p, r, f = self.evaluatorInstance.getPRF(Y_val_true, Y_val_pred)
@@ -86,6 +86,7 @@ if __name__ == '__main__':
     valFile.close()
     print('Completed parsing')
 
+    # Create lists of all the featurizers and classifiers
     featurizers = [CountFeaturizer(), Tf_Idf_Featurizer()]
     classifiers = [MultinomialNaiveBayes(), SupportVectorMachine(), MultiLayerPerceptron()]
     i = 0
@@ -93,7 +94,7 @@ if __name__ == '__main__':
     # Run for all combinations
     for featurizer in featurizers:
         for classifier in classifiers:
-            i = i + 1
+            i += 1
             print('\n------------ (Test #{}) ------------'.format(i))
             print('Featurizer:\t' +featurizer.getName())
             print('Classifier:\t' +classifier.getName())
